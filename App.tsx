@@ -1,14 +1,18 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
+import {FirstLoginProvider} from './src/context/FirstLoginContext';
+import OpenScreen from './src/screens/openScreen/OpenScreen';
 
 const App = () => {
   return (
-    <View>
-      <Text>App</Text>
-    </View>
+    <>
+      <NavigationContainer>
+        <FirstLoginProvider>
+          <OpenScreen />
+        </FirstLoginProvider>
+      </NavigationContainer>
+    </>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({});
