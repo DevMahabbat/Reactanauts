@@ -6,17 +6,74 @@ import {
   Text,
   TextInput,
   View,
+  FlatList,
+  TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useContext, useState} from 'react';
 
 import {
   LocationIcon,
   StarIcon,
   ClockIcon,
-  BookmarkIconNormal,
 } from '../assets/generatedicons';
+import {DataContext} from '../context/DataContext';
+import SvgBookmarkIconActive from '../assets/generatedicons/BookmarkIconActive';
 
-const SearchScreen = () => {
+const SearchScreen = ({navigation}: any) => {
+  const {contextData, setContextData} = useContext(DataContext);
+  console.log(contextData);
+  const goToDetail = (item: any) => {
+    navigation.navigate('ExploreDetail', {item: item});
+  };
+  // id: place.id,
+  // name: place.name,
+  // categoryId: place.categoryId,
+  // rate: place.rate,
+  // lat: place.lat,
+  // long: place.long,
+  // imageUrl: place.imageUrl,
+  // openCloseTime: place.openCloseTime,
+  // adress: place.adress,
+  // phone: place.phone,
+  // isSaved: place.isSaved,
+  const [dataToShow, setDataToShow] = useState(contextData);
+  const renderItem = ({item}: any) => (
+    <TouchableOpacity onPress={() => goToDetail(item)}>
+      <View style={styles.detailsImg}>
+        <View style={styles.bookmarkIcon}>
+          <SvgBookmarkIconActive width="12" height="12" stroke="#fff" />
+        </View>
+
+        <Image
+          source={{uri: item.imageUrl}}
+          style={{
+            width: '90%',
+            height: 253,
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+          }}
+        />
+      </View>
+      <View style={styles.secondaryCintainer}>
+        <Text style={styles.textStylePrimaryThird}>{item.name}</Text>
+        <View style={styles.thirdContainer}>
+          <View style={styles.iconstack}>
+            <LocationIcon width="13" />
+            <Text style={styles.textLabel}>13 km</Text>
+          </View>
+          <View style={styles.iconstack}>
+            <ClockIcon width="13" />
+            <Text style={styles.textLabel}>{item.openCloseTime}</Text>
+          </View>
+          <View style={styles.iconstack}>
+            <StarIcon width="13" />
+            <Text style={styles.textLabel}>{item.rate}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.rootCont}>
       <View style={styles.rooCont1}>
@@ -57,47 +114,13 @@ const SearchScreen = () => {
             <Text style={styles.textCategories}>🏨 Hospital</Text>
           </View>
         </ScrollView>
-        <ScrollView>
-          <View>
-            <View style={styles.detailsImg}>
-              <View style={styles.bookmarkIcon}>
-                <BookmarkIconNormal
-                  width="12"
-                  height="12"
-                  // fill="#fff"
-                  stroke="#fff"
-                />
-              </View>
+   
+        <FlatList
+          data={dataToShow}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
 
-              <Image
-                style={{
-                  width: '90%',
-                  height: 253,
-                  borderTopLeftRadius: 12,
-                  borderTopRightRadius: 12,
-                }}
-                source={require('../assets/images/testimg.png')}
-              />
-            </View>
-            <View style={styles.secondaryCintainer}>
-              <Text style={styles.textStylePrimaryThird}>Museum in</Text>
-              <View style={styles.thirdContainer}>
-                <View style={styles.iconstack}>
-                  <LocationIcon width="13" />
-                  <Text style={styles.textLabel}>13 km</Text>
-                </View>
-                <View style={styles.iconstack}>
-                  <ClockIcon width="13" />
-                  <Text style={styles.textLabel}>08:00 - 23:00</Text>
-                </View>
-                <View style={styles.iconstack}>
-                  <StarIcon width="13" />
-                  <Text style={styles.textLabel}>4.3</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
       </View>
     </SafeAreaView>
   );

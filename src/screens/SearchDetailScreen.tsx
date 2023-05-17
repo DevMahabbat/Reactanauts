@@ -1,63 +1,44 @@
+// import { StyleSheet, Text, View } from 'react-native'
+// import React from 'react'
+
+// const SearchDetailScreen = () => {
+//   return (
+//     <View>
+//       <Text>SearchDetailScreen</Text>
+//     </View>
+//   )
+// }
+
+// export default SearchDetailScreen
+
+// const styles = StyleSheet.create({})
 import {
   Image,
-  Linking,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import React,{useEffect,useState} from 'react';
+import React from 'react';
 import {
   LocationIcon,
   StarIcon,
   ClockIcon,
   TelephoneIcon,
-} from '../../assets/generatedicons';
-import MapView,{Marker} from 'react-native-maps';
-import { useIsFocused } from '@react-navigation/native';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+} from '../assets/generatedicons';
 
+const SearchDetailScreen = ({navigation, route}: any) => {
+  const {item} = route.params;
 
-const HomeDetails = ({navigation,route}:any) => {
-  // const [lat,setlat] = useState<Double>(35);
-  // const [long,setlong] = useState<Double>(35);
-const isFocused = useIsFocused()
-   const {item}: any = route.params
-
-//   useEffect(() => {
-//   if(isFocused){
-// setlat(item.lat)
-// setlong(item.long)
-//   }
-//   }, [isFocused])
-const openLink = async (lat:any,long:any) => {
-  const url = `https://www.google.com/maps/place/${lat},${long}`;
-
-  // Check if the link is supported by the device
-  const supported = await Linking.canOpenURL(url);
-
-  if (supported) {
-    // Open the link with the default browser
-    await Linking.openURL(url);
-  } else {
-    console.log('Unsupported link: ', url);
-  }
-};
-
-
-
-
-  const lat =  parseFloat(item.lat)
-  const long =  parseFloat(item.long)
   return (
     <SafeAreaView style={styles.mainCont}>
       <StatusBar barStyle="light-content" />
       <ScrollView>
         <View style={styles.detailsImg}>
-        
+         
 
           <Image
             source={{uri: item.imageUrl}}
@@ -98,23 +79,8 @@ const openLink = async (lat:any,long:any) => {
         </View>
         <View style={styles.thirdCont}>
           <Text style={styles.textStylePrimaryThird}>Map</Text>
-          <View style={styles.mapStyle}>
-            
-          <MapView
-        style={styles.map}
-        //specify our coordinates.
-        initialRegion={{
-          latitude: lat,
-          longitude: long,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01
-          
-          
-        }} >
-        <Marker coordinate={{ latitude:lat, longitude:long}} />
-      </MapView>
-          </View>
-          <TouchableOpacity style={styles.btnStyle} onPress={() => openLink(lat,long)}>
+          <View style={styles.mapStyle}></View>
+          <TouchableOpacity style={styles.btnStyle}>
             <Text style={styles.btnStyleText}>Go to map</Text>
           </TouchableOpacity>
         </View>
@@ -123,7 +89,7 @@ const openLink = async (lat:any,long:any) => {
   );
 };
 
-export default HomeDetails;
+export default SearchDetailScreen;
 
 const styles = StyleSheet.create({
   mainCont: {
@@ -190,8 +156,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 8,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
   },
 });
