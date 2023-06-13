@@ -27,7 +27,7 @@ https://github.com/neomond/Reactanauts/assets/92153363/e169eb30-3a15-4e70-b5f2-3
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/mahabbat-zakariyayev-a5939a22b/]
 
 
 
