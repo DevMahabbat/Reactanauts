@@ -19,7 +19,7 @@ const AddCategory = () => {
 
         baseNetwork.add('categories', requestData)
             .then(res => {
-                console.log('SUCCESS!!');
+                // console.log('SUCCESS!!');
             })
 
     }

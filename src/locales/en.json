@@ -1,6 +1,6 @@
 {
   "translation": {
-    "information": "imnformation",
+    "information": "Information",
     "map": "Map",
     "openmap": "Go to Map",
     "saved": "Saved",
@@ -8,6 +8,7 @@
     "settings": "Settings",
     "selectlang": "Select language",
     "noSavedItems": "No Saved Items",
-    "changelang": "Change Language"
+    "changelang": "Change Language",
+    "darkmode": "Dark Mode"
   }
 }

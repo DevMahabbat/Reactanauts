@@ -71,9 +71,9 @@ const CategoryListScren = ({navigation}: any) => {
   };
   const next = () => {
     if (categories.length > 0) {
-      console.log('====================================');
-      console.log(categories);
-      console.log('====================================');
+      // console.log('====================================');
+       // console.log(categories);
+      // console.log('====================================');
       saveUserCategories(categories).then(res => {
         setFirstLogin(false);
       });

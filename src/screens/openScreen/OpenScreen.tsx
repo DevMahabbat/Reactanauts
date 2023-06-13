@@ -4,6 +4,7 @@ import StartStack from "../../navigation/stack/start"
 import TabMain from "../../navigation/tab"
 import { FirstLoginContext } from "../../context/FirstLoginContext";
 import { getUserCategories, removeAllUserCategories } from "../../utils/storage/usersSavedCategoriesHelper";
+import axios from "axios";
 
 
 
@@ -13,6 +14,16 @@ const OpenScreen = () => {
 
     let { firstLogin, setFirstLogin } = useContext(FirstLoginContext);
 
+    
+    useEffect(() => {
+
+        axios.get('10.0.2.2').then(res=>{
+            console.log('unnecessary testind place data::',res.data);
+        }).catch(err => {console.log(err);
+        })
+
+
+    },[])
     useEffect(() => {
 
         getUserCategories()
@@ -25,7 +36,7 @@ const OpenScreen = () => {
                     setFirstLogin(true);
                     setloading(false);
                 }
-            })
+            }).catch(err => {console.log(err);})
 
     }, [])
 

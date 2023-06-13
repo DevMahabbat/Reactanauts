@@ -29,7 +29,7 @@ export class BaseNetwork {
 
         await axiosInstance.post(url, data)
             .then(res => {
-                console.log('DATA', res.data);
+                // console.log('DATA', res.data);
 
                 response = res.data;
             })

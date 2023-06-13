@@ -10,27 +10,33 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {FavoritesContext} from '../../context/FavoritesContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { FavoritesContext } from '../../context/FavoritesContext';
 import Wheather from '../../components/Onboarding/Wheather';
-import {Loc, Saat, Ulsuz} from '../../components/images';
-import {DataContext} from '../../context/DataContext';
-import {useIsFocused} from '@react-navigation/native';
+import { Loc, Saat, Ulsuz } from '../../components/images';
+import { DataContext } from '../../context/DataContext';
+import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Geolocation from 'react-native-geolocation-service';
-import {request, PERMISSIONS} from 'react-native-permissions';
-import {BookmarkIconActive} from '../../assets/generatedicons';
-import {ThemeContext} from '../../context/ThemeContext';
+import { request, PERMISSIONS } from 'react-native-permissions';
+import { BookmarkIconActive } from '../../assets/generatedicons';
+import { ThemeContext } from '../../context/ThemeContext';
+import { AppDispatch, RootState } from '../../redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllPlaces } from '../../redux/slices/placeslice';
 
-const ExploreMain = ({navigation}: any) => {
+const ExploreMain = ({ navigation }: any) => {
   const [selectedItemIds, setSelectedItemIds] = useState<any>([]);
-  const {theme, isDarkMode} = useContext(ThemeContext);
+  const { theme, isDarkMode } = useContext(ThemeContext);
 
   const [load, setload] = useState(false);
   const isFocused = useIsFocused();
   const [sections, setSections] = useState<any[]>([]);
 
-  const {contextData, setContextData} = useContext(DataContext);
+  // const {contextData, setContextData} = useContext(DataContext);
+
+  const contextData = useSelector((state: RootState) => state.placeslice.places)
+  const dispatch = useDispatch<AppDispatch>()
   const [favcategories, setfavCategorites] = useState([]);
   const [latitude, setLatitude] = useState<any>(null);
   const [longitude, setLongitude] = useState<any>(null);
@@ -50,7 +56,7 @@ const ExploreMain = ({navigation}: any) => {
             error => {
               console.log(error);
             },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
           );
         }
       } else {
@@ -64,7 +70,7 @@ const ExploreMain = ({navigation}: any) => {
             error => {
               console.log(error);
             },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
           );
         }
       }
@@ -73,48 +79,77 @@ const ExploreMain = ({navigation}: any) => {
     }
   };
   useEffect(() => {
-    getLocation();
+    try {
+      dispatch(getAllPlaces())
+    } catch (error) {
+      console.log(error);
 
-    AsyncStorage.getItem('userCategories').then(res => {
-      console.log(res);
 
-      const favcategories1 = JSON.parse(res ? res : '[]');
-      setfavCategorites(favcategories1);
-      console.log(favcategories1);
+    }
+  }, [dispatch])
+  useEffect(() => {
 
-      const mappedData = favcategories1.map((category: any) => {
-        const placesInCategory = contextData.filter(
-          (place: any) => place.categoryId == category.id,
-        );
-        const mappedPlaces = placesInCategory.map((place: any) => ({
-          id: place.id,
-          name: place.name,
-          categoryId: place.categoryId,
-          rate: place.rate,
-          lat: place.lat,
-          long: place.long,
-          imageUrl: place.imageUrl,
-          openCloseTime: place.openCloseTime,
-          adress: place.adress,
-          phone: place.phone,
-          isSaved: place.isSaved,
-        }));
+    try {
+      getLocation();
+      // console.log(contextData)
+      AsyncStorage.getItem('userCategories').then(res => {
+        console.log(res);
 
-        return {
-          title: category.name,
-          data: mappedPlaces,
-        };
-      });
-      console.log(mappedData);
+        const favcategories1 = JSON.parse(res ? res : '[]');
+        setfavCategorites(favcategories1 || "");
+        // console.log(favcategories1);
 
-      setSections(mappedData);
+        const mappedData = favcategories1.map((category: any) => {
+          const placesInCategory = contextData.filter(
+            (place: any) => place.categoryId == category.id,
+          );
+          const mappedPlaces = placesInCategory.map((place: any) => ({
+            id: place._id,
+            name: place.name,
+            categoryId: place.categoryId,
+            rate: place.rate,
+            lat: place.lat,
+            long: place.long,
+            imageUrl: place.imageUrl,
+            openCloseTime: place.openCloseTime,
+            adress: place.adress,
+            phone: place.phone,
+            isSaved: place.isSaved,
+            __v: place.__v
+          }));
 
-      setload(!load);
-      console.log(favcategories);
-    });
-  }, []);
+          return {
+            title: category.name,
+            data: mappedPlaces,
+          };
+        });
+        // console.log("mapped data", mappedData);
 
-  let {favorites, setFavorites} = useContext(FavoritesContext);
+        setSections(mappedData);
+
+        setload(!load);
+        // console.log(favcategories);
+      })
+        .catch(err => {
+          console.log(err)
+
+
+        });
+
+
+
+
+    } catch (error) {
+      console.log(error);
+
+    }
+
+
+
+
+  }, [contextData]);
+
+  let { favorites, setFavorites } = useContext(FavoritesContext);
   const [products, setproducts] = useState<any[]>([]);
 
   const favOperation = (item: any) => {
@@ -126,37 +161,7 @@ const ExploreMain = ({navigation}: any) => {
       setFavorites([...filteredFavorites]);
     }
   };
-  // const Favorites = async (item: any) => {
-  //   setIsButtonPressed(!isButtonPressed)
-  //   try {
-  //     const basketItems: any = await AsyncStorage.getItem('basket');
-  //     let basket = [];
 
-  //     if (basketItems !== null) {
-  //       basket = JSON.parse(basketItems);
-
-  //       const isItemInBasket = basket.some((basketItem: any) => basketItem.id === item.id);
-  //       if (isItemInBasket) {
-  //         // Item already exists in the basket, remove it
-  //         const updatedBasket = basket.filter((basketItem: any) => basketItem.id !== item.id);
-  //         await AsyncStorage.setItem('basket', JSON.stringify(updatedBasket));
-  //         console.log('Item removed from basket:', item);
-  //       } else {
-  //         // Item doesn't exist in the basket, add it
-  //         basket.push(item);
-  //         await AsyncStorage.setItem('basket', JSON.stringify(basket));
-  //         console.log('Item added to basket:', item);
-  //       }
-  //     } else {
-  //       // No items in the basket, add the item
-  //       basket.push(item);
-  //       await AsyncStorage.setItem('basket', JSON.stringify(basket));
-  //       console.log('Item added to basket:', item);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error adding/removing item to/from basket:', error);
-  //   }
-  // };
   const Favorites = async (item: any) => {
     setIsButtonPressed(!isButtonPressed);
     if (selectedItemIds.includes(item.id)) {
@@ -184,18 +189,18 @@ const ExploreMain = ({navigation}: any) => {
             (basketItem: any) => basketItem.id !== item.id,
           );
           await AsyncStorage.setItem('basket', JSON.stringify(updatedBasket));
-          console.log('Item removed from basket:', item);
+          // console.log('Item removed from basket:', item);
         } else {
           // Item doesn't exist in the basket, add it
           basket.push(item);
           await AsyncStorage.setItem('basket', JSON.stringify(basket));
-          console.log('Item added to basket:', item);
+          // console.log('Item added to basket:', item);
         }
       } else {
         // No items in the basket, add the item
         basket.push(item);
         await AsyncStorage.setItem('basket', JSON.stringify(basket));
-        console.log('Item added to basket:', item);
+        // console.log('Item added to basket:', item);
       }
     } catch (error) {
       console.error('Error adding/removing item to/from basket:', error);
@@ -223,16 +228,15 @@ const ExploreMain = ({navigation}: any) => {
       Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) ** 2;
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
-
-    return Math.floor(distance);
+    return distance.toPrecision(3);
   }
 
   const goToDetail = (item: any) => {
-    navigation.navigate('ExploreDetail', {item: item});
+    navigation.navigate('ExploreDetail', { item: item });
   };
   // Example usage
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     <Pressable onPress={() => goToDetail(item)}>
       <View
         style={{
@@ -242,10 +246,10 @@ const ExploreMain = ({navigation}: any) => {
           marginTop: 20,
           marginLeft: 10,
         }}>
-        <View style={{flexDirection: 'column'}}>
-          <View style={{position: 'relative'}}>
+        <View style={{ flexDirection: 'column' }}>
+          <View style={{ position: 'relative' }}>
             <Image
-              source={{uri: item.imageUrl}}
+              source={{ uri: item.imageUrl }}
               style={{
                 width: 280,
                 height: 200,
@@ -260,21 +264,21 @@ const ExploreMain = ({navigation}: any) => {
                 right: 10,
                 backgroundColor: 'black',
                 marginLeft: 10,
-                padding: 10,
+                padding: 4,
                 borderRadius: 100,
               }}>
               <TouchableOpacity onPress={() => Favorites(item)}>
                 <BookmarkIconActive
-                  width="12"
-                  height="20"
+                  width="15"
+                  height="25"
                   fill={selectedItemIds.includes(item.id) ? 'white' : 'black'}
                 />
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{marginTop: 12, marginLeft: 10}}>
+          <View style={{ marginTop: 12, marginLeft: 10 }}>
             <Text
-              style={{color: theme.textColor, fontSize: 16, marginLeft: 10}}>
+              style={{ color: theme.textColor, fontSize: 16, marginLeft: 10 }}>
               {item.name}
             </Text>
           </View>
@@ -285,33 +289,33 @@ const ExploreMain = ({navigation}: any) => {
               gap: 25,
               marginLeft: 20,
             }}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Loc
                 width="12"
                 height="12"
-                style={{marginRight: 4, marginTop: 2}}
+                style={{ marginRight: 4, marginTop: 2 }}
               />
-              <Text style={[{color: theme.textColor}]}>
+              <Text style={[{ color: theme.textColor }]}>
                 {calculateDistance(latitude, longitude, item.lat, item.long)} KM
               </Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               <Saat
                 width="12"
                 height="12"
-                style={{marginRight: 4, marginTop: 2}}
+                style={{ marginRight: 4, marginTop: 2 }}
               />
-              <Text style={[{color: theme.textColor}]}>
+              <Text style={[{ color: theme.textColor }]}>
                 {item.openCloseTime}
               </Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               <Ulsuz
                 width="12"
                 height="12"
-                style={{marginRight: 4, marginTop: 2}}
+                style={{ marginRight: 4, marginTop: 2 }}
               />
-              <Text style={[{fontSize: 14}, {color: theme.textColor}]}>
+              <Text style={[{ fontSize: 14 }, { color: theme.textColor }]}>
                 {item.rate}
               </Text>
             </View>
@@ -322,7 +326,7 @@ const ExploreMain = ({navigation}: any) => {
   );
 
   return (
-    <SafeAreaView style={[{flex: 1}, {backgroundColor: theme.backgroundColor}]}>
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor: theme.backgroundColor }]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={theme.backgroundColor}
@@ -331,7 +335,7 @@ const ExploreMain = ({navigation}: any) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {sections.map((bolum, index) => (
           <View key={index}>
-            <View style={{marginLeft: 20}}>
+            <View style={{ marginLeft: 20 }}>
               <Text
                 style={[
                   {
@@ -342,8 +346,7 @@ const ExploreMain = ({navigation}: any) => {
                   {
                     color: theme.textColor,
                   },
-                ]}>
-                {bolum.title}
+                ]}>{bolum.title}
               </Text>
             </View>
             <FlatList
@@ -351,7 +354,8 @@ const ExploreMain = ({navigation}: any) => {
               renderItem={renderItem}
               keyExtractor={item => item.id.toString()}
               horizontal={true}
-              contentContainerStyle={{paddingHorizontal: 10, gap: 20}}
+              contentContainerStyle={{ paddingHorizontal: 10, gap: 20 }}
+              showsHorizontalScrollIndicator={false}
             />
           </View>
         ))}

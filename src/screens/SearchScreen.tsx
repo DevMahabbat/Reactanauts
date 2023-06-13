@@ -18,9 +18,13 @@ import {DataContext} from '../context/DataContext';
 import SvgBookmarkIconActive from '../assets/generatedicons/BookmarkIconActive';
 import {useTranslation} from 'react-i18next';
 import {ThemeContext} from '../context/ThemeContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux';
 
 const SearchScreen = ({navigation}: any) => {
-  const {contextData, setContextData} = useContext(DataContext);
+  const contextData = useSelector((state: RootState) => state.placeslice.places)
+  const dispatch = useDispatch<AppDispatch>()
+  // const {contextData, setContextData} = useContext(DataContext);
   const [filteredData, setFilteredData] = useState<any[]>(contextData);
   const [searchText, setSearchText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,6 +34,8 @@ const SearchScreen = ({navigation}: any) => {
 
   const {t, i18n} = useTranslation();
 
+
+
   const changeLang = (lang: string) => {
     i18n.changeLanguage(lang).then(() => {
       // this.props.close();
@@ -37,7 +43,7 @@ const SearchScreen = ({navigation}: any) => {
       setcurrentLanguage(lang);
     });
   };
-  console.log(contextData);
+  // console.log(contextData);
   const goToDetail = (item: any) => {
     navigation.navigate('ExploreDetail', {item: item});
   };
@@ -48,10 +54,11 @@ const SearchScreen = ({navigation}: any) => {
     const filtered = contextData.filter((item: any) =>
       item.name.toLowerCase().includes(text.toLowerCase()),
     );
-    console.log(filteredData);
+    // console.log(filteredData);
     setFilteredData(filtered);
     setLoading(false);
   };
+  
 
   // const handleCategoryFilter = (category: string): void => {
   //   setSelectedCategory(category);
@@ -75,7 +82,7 @@ const SearchScreen = ({navigation}: any) => {
     <TouchableOpacity onPress={() => goToDetail(item)}>
       <View style={styles.detailsImg}>
         <View style={styles.bookmarkIcon}>
-          <SvgBookmarkIconActive width="12" height="12" stroke="#fff" />
+          <SvgBookmarkIconActive width="15" height="25" stroke="#fff" />
         </View>
         <Image
           source={{uri: item.imageUrl}}
@@ -124,7 +131,7 @@ const SearchScreen = ({navigation}: any) => {
       {loading ? (
         <ActivityIndicator size="large" color="#fff" />
       ) : (
-        <Text style={[{color: '#fff', fontSize: 18}, {color: theme.textColor}]}>
+        <Text style={[{color: '#fff', fontSize: 20}, {color: theme.textColor}]}>
           No results found.
         </Text>
       )}
@@ -268,7 +275,7 @@ const SearchScreen = ({navigation}: any) => {
           <FlatList
             data={filteredData}
             renderItem={renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
           />
         )}
       </View>
@@ -343,7 +350,7 @@ const styles = StyleSheet.create({
     top: 15,
     right: 35,
     borderRadius: 20,
-    padding: 10,
+    padding: 5,
     backgroundColor: '#1C1C1C',
   },
   input: {

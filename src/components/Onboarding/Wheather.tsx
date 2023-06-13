@@ -49,7 +49,7 @@ const App = () => {
   };
 
   const getLocationName = async (latitude: any, longitude: any) => {
-    console.log(latitude + 'salam ' + longitude);
+    // console.log(latitude + 'salam ' + longitude);
 
     // try {
     //   const response = await Geocoder.from(latitude, longitude);
@@ -64,7 +64,7 @@ const App = () => {
       )
 
       .then(response => {
-        console.log('konummmm', response);
+        // console.log('konummmm', response);
 
         setKonum(response.data);
       })

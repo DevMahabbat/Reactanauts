@@ -5,17 +5,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import '../../locales/i18n';
-import {useTranslation} from 'react-i18next';
-import {Switch, Provider as PaperProvider} from 'react-native-paper';
-import {ThemeContext} from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { Switch, Provider as PaperProvider } from 'react-native-paper';
+import { ThemeContext } from '../../context/ThemeContext';
 
-const SettingsMain = ({navigation}: any) => {
-  const {isDarkMode, toggleTheme, theme} = useContext(ThemeContext);
+const SettingsMain = ({ navigation }: any) => {
+  const { isDarkMode, toggleTheme, theme } = useContext(ThemeContext);
 
   const [currentLanguage, setcurrentLanguage] = useState('az');
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const changeLang = (lang: string) => {
     i18n.changeLanguage(lang).then(() => {
@@ -37,20 +37,27 @@ const SettingsMain = ({navigation}: any) => {
         },
       }}>
       <SafeAreaView
-        style={[styles.main, {backgroundColor: theme.backgroundColor}]}>
+        style={[styles.main, { backgroundColor: theme.backgroundColor }]}>
         <View style={styles.toggleWrapper}>
-          <TouchableOpacity onPress={toggleTheme}>
+
+          <Text style={[styles.header, { color: theme.textColor }]}>
+            {t('settings')}
+          </Text>
+        </View>
+
+        <View style={{ flexDirection: 'row',}}>
+
+          <Text style={[{ flexDirection: 'row', fontSize: 19, paddingLeft:3 }, { color: theme.textColor }]}>{t('darkmode')} </Text>
+          <TouchableOpacity onPress={toggleTheme} style={{ flexDirection: "row" }}>
             <Switch
               style={styles.switch}
               value={isDarkMode}
               onValueChange={onToggleSwitch}
             />
           </TouchableOpacity>
-          <Text style={[styles.header, {color: theme.textColor}]}>
-            {t('settings')}
-          </Text>
-        </View>
 
+
+        </View>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('LanguageSelect');
@@ -88,7 +95,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   switch: {
-    transform: [{scale: 0.8}],
+    transform: [{ scale: 0.8 }],
   },
   toggleWrapper: {
     flexDirection: 'row-reverse',

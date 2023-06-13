@@ -44,7 +44,7 @@ const SavedItemsScreen = () => {
         setSavedItems(savedItemsArray);
       }
     } catch (error) {
-      console.log('Error loading saved items:', error);
+      // console.log('Error loading saved items:', error);
     }
   };
 
